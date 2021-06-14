@@ -20,8 +20,17 @@ public class Alfandega {
 		this.itensTarifados.add(itemTarifado);
 	}
 
-	public double getTotalDeclarado() {
+	public double getTotal(String caso) {
 		double total = 0.0;
+		if (caso == "Devido") {
+			for (Item item : this.itens) {
+				total += item.getRate() * item.getValor() * 0.01;
+			}
+			for (ItemTarifado itemTarifado : this.itensTarifados) {
+				total += itemTarifado.getRate() * itemTarifado.getValor() * itemTarifado.getTarifa();
+			}
+			return total;
+		}
 		for (Item item : this.itens) {
 			total += item.getRate() * item.getValor();
 		}
@@ -30,17 +39,14 @@ public class Alfandega {
 		}
 		return total;
 	}
-
+	
+	public double getTotalDeclarado() {
+		double total = getTotal("Declarado");
+		return total;
+	}
+	
 	public double getTotalDevido() {
-		double total = 0.0;
-		for (Item item : this.itens) {
-			// Mesmo em itens sem tarifa, a alfândega cobra
-			// uma taxa de 1% Por quê? Porque eles podem.
-			total += item.getRate() * item.getValor() * 0.01;
-		}
-		for (ItemTarifado itemTarifado : this.itensTarifados) {
-			total += itemTarifado.getRate() * itemTarifado.getValor() * itemTarifado.getTarifa();
-		}
+		double total = getTotal("Devido");
 		return total;
 	}
 }
